@@ -1,0 +1,294 @@
+
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>🎯 Truth or Dare - Deluxe Wheel</title>
+<style>
+  body {
+    background: radial-gradient(circle at center, #1e1b4b, #0f172a);
+    font-family: "Poppins", sans-serif;
+    color: #fff;
+    text-align: center;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  h1 { margin-bottom: 10px; }
+  .wheel-container {
+    display: flex;
+    gap: 60px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .wheel-wrapper {
+    position: relative;
+  }
+  canvas {
+    border-radius: 50%;
+    background: #111;
+    box-shadow: 0 0 15px rgba(255,255,255,0.15);
+  }
+.arrow {
+  position: absolute;
+  top: 125px;                    /* đúng giữa hình tròn (vì radius = 125px) */
+  right: -30px;                  /* nằm ngoài mép phải một chút */
+  transform: translateY(-50%);   /* căn giữa chính xác theo chiều dọc */
+  width: 0;
+  height: 0;
+  border-top: 14px solid transparent;
+  border-bottom: 14px solid transparent;
+  border-right: 28px solid #facc15; /* đầu nhọn hướng sang trái */
+  filter: drop-shadow(0 0 4px #000);
+}
+  .buttons {
+    margin-top: 25px;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  button {
+    padding: 12px 22px;
+    border: none;
+    border-radius: 10px;
+    background: #facc15;
+    color: #111;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.25s;
+  }
+  button:hover {
+    background: #fde047;
+  }
+  #result {
+    margin-top: 18px;
+    font-size: 18px;
+    font-weight: 500;
+  }
+  .note {
+    font-size: 13px;
+    opacity: 0.8;
+    margin-top: 5px;
+  }
+</style>
+</head>
+<body>
+<h1>🎯 Vòng quay Truth or Dare 🎡</h1>
+
+<div class="wheel-container">
+  <div class="wheel-wrapper">
+    <div class="arrow"></div>
+    <canvas id="wheel1" width="250" height="250"></canvas>
+    <p class="note">Vòng 1: Chọn Truth hoặc Dare<br>(→ để quay)</p>
+  </div>
+  <div class="wheel-wrapper">
+    <div class="arrow"></div>
+    <canvas id="wheel2" width="250" height="250"></canvas>
+    <p class="note">Vòng 2: Câu hỏi hoặc thử thách<br>(↓ để quay)</p>
+  </div>
+</div>
+
+<div class="buttons">
+  <button id="spin1">🎡 Quay vòng 1</button>
+  <button id="spin2">🎲 Quay vòng 2</button>
+</div>
+<div id="result"></div>
+
+<script>
+// ======= DÁN DANH SÁCH CỦA BẠN Ở ĐÂY =======
+const truthItems = [
+"Lần gần nhất bạn muốn hôn tôi ngay lập tức là khi nào?, hoặc uống 2 ly.",
+"Mô tả chi tiết một nụ hôn lý tưởng của bạn với tôi, hoặc uống 3 ly.",
+"Bạn muốn tôi chạm vào đâu nhất bây giờ?, hoặc uống 2 ly.",
+"Kể một tưởng tượng “nóng” về chúng ta, hoặc uống 3 ly.",
+"Nếu phải chọn một chỗ trên cơ thể tôi để hôn, bạn chọn đâu?, hoặc uống 3 ly.",
+"Bạn thích tôi mặc gì để trông sexy nhất?, hoặc uống 2 ly.",
+"Bạn muốn thử tư thế ôm/hôn nào chưa từng thử?, hoặc uống 2 ly.",
+"Có điều gì bạn muốn tôi làm cho bạn nhưng chưa dám nói?, hoặc uống 2 ly.",
+"Lần đầu tiên bạn thấy tôi sexy là khi nào?, hoặc uống 3 ly.",
+"Bạn từng tưởng tượng chúng ta ở một tình huống “nóng” nơi riêng tư chưa?, hoặc uống 2 ly.",
+"Bạn có muốn thử hôn “gợi cảm” ngay bây giờ không?, hoặc uống 2 ly.",
+"Mô tả cảm giác khi bạn ôm tôi chặt., hoặc uống 2 ly.",
+"Bạn thích kiểu vuốt ve nào của tôi nhất?, hoặc uống 2 ly.",
+"Kể một lần bạn tưởng tượng chúng ta gần gũi nhưng chưa thực hiện., hoặc uống 2 ly.",
+"Điều bạn muốn thử với tôi nhưng chưa dám thử., hoặc uống 2 ly.",
+"Bạn mất trinh ở tuổi nào?, hoặc uống 3 ly.",
+"Bạn đã ngủ với bao nhiêu người?, hoặc uống 3 ly.",
+"Nụ hôn tồi tệ nhất của bạn là ai?, hoặc uống 2 ly.",
+"Vai diễn kỳ lạ nhất mà bạn từng làm là gì?, hoặc uống 2 ly.",
+"Bạn đã bao giờ bị bắt quả tang chưa? Nếu vậy, bởi ai?, hoặc uống 2 ly.",
+"Bạn đã bao giờ tập hôn trong gương chưa?, hoặc uống 1 ly.",
+"Bạn đã từng say nhất là gì?, hoặc uống 2 ly.",
+"Nếu phải quay lại với người yêu cũ, bạn sẽ chọn ai, vì sao?, hoặc uống 2 ly.",
+"Bạn đã bao giờ chia tay người yêu cũ ngay trước sinh nhật của họ để tránh mua quà sinh nhật cho họ chưa, vì sao?, hoặc uống 2 ly.",
+"Nơi kỳ lạ nhất mà bạn đã hôn, đụ với ai đó là gì?, hoặc uống 2 ly.",
+"Bạn đã bao giờ hẹn hò với ai đó chỉ vì tình dục, vì sao?, hoặc uống 2 ly.",
+"Bạn đã từng gửi ảnh khỏa thân chưa, vì sao?, hoặc uống 2 ly.",
+"Gọi tên một người mà bạn hối hận vì đã hôn., hoặc uống 2 ly.",
+"Kể 1 bí mật nào bạn chưa từng nói với ai?, hoặc uống 3 ly.",
+"Đoán màu sắc của quần lót của đối phương là gì?, hoặc uống 2 ly."
+]
+const dareItems = [
+"Hôn người kia ở cổ trong 20 giây, hoặc uống 2 ly.",
+"Hôn người kia ở vai 20 giây, hoặc uống 2 ly.",
+"Nhắm mắt, để người kia hôn bất cứ đâu trong 60 giây, hoặc uống 3 ly.",
+"Hôn tay người kia 20 giây, hoặc uống 2 ly.",
+"Ôm người kia thật chặt trong 60 giây, hoặc uống 3 ly.",
+"“Mini dance” sexy 20 giây trước người kia, hoặc uống 3 ly.",
+"Ôm eo hoặc lưng người kia 20 giây, hoặc uống 2 ly.",
+"Cởi một lớp áo hoặc swap 1 món đồ với người kia, hoặc uống 2 ly.",
+"Hôn “mini kiss” liên tiếp 10 lần, hoặc uống 2 ly.",
+"Massage lưng hoặc chân người kia 30 giây , hoặc uống 3 ly.",
+"Cả hai cùng uống 2 ly và hôn nhau 36 giây.",
+"Hôn bất kỳ chỗ nào được chọn ngẫu nhiên 36 giây, hoặc uống 2 ly.",
+"Cuddle + hôn liên tục 30 giây, hoặc cả 2 cùng uống 1 ly.",
+"Cho tôi cú bò sexy nhất của bạn trong 18 giây, hoặc uống 4 ly.",
+"Ngồi trên đùi tôi cho đến khi hết trò chơi, hoặc uống 3 ly.",
+"Để tôi chạm vào vùng nhạy cảm trong 30 giây, hoặc uống 2 ly.",
+"Để tôi hôn bất cứ đâu bạn chọn trong 20 giây, hoặc uống 2 ly.",
+"Để tôi vuốt ve bất cứ đâu bạn chọn trong 20 giây, hoặc uống 2 ly.",
+"Thì thầm vào tai người đối diện điều gì đó gợi cảm trong 30 giây, hoặc uống 3 ly.",
+"Ôm người kia từ phía sau và hôn lên cổ họ, hoặc uống 2 ly.",
+"Đặt tay bạn lên bất cứ đâu của đối phương trong 1 phút, hoặc uống 2 ly.",
+"Dùng tay xoa bóp đùi người kia trong 20 giây, hoặc uống 3 ly.",
+"Để người kia hôn lên ngực bạn trong 36 giây, hoặc uống 3 ly.",
+"Để người kia hôn lên bụng bạn trong 18 giây, hoặc uống 3 ly.",
+];
+// ============================================
+
+const wheel1 = document.getElementById("wheel1");
+const wheel2 = document.getElementById("wheel2");
+const ctx1 = wheel1.getContext("2d");
+const ctx2 = wheel2.getContext("2d");
+const result = document.getElementById("result");
+const btn1 = document.getElementById("spin1");
+const btn2 = document.getElementById("spin2");
+let choice1 = null;
+let spinning = false;
+
+// Hiệu ứng âm thanh "click click"
+const clickSound = new Audio();
+clickSound.src =
+  "data:audio/mp3;base64,//uQxA..."; // âm thanh base64 ngắn, không cần file ngoài
+clickSound.volume = 0.3;
+
+// Vẽ vòng cơ bản
+function drawWheel(ctx, items, colors) {
+  ctx.clearRect(0, 0, 250, 250);
+  const n = items.length;
+  const arc = (2 * Math.PI) / n;
+  for (let i = 0; i < n; i++) {
+    ctx.beginPath();
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.moveTo(125, 125);
+    ctx.arc(125, 125, 120, i * arc, (i + 1) * arc);
+    ctx.lineTo(125, 125);
+    ctx.fill();
+
+    ctx.save();
+    ctx.translate(125, 125);
+    ctx.rotate(i * arc + arc / 2);
+    ctx.fillStyle = "#fff";
+    ctx.font = "bold 14px Poppins";
+    ctx.textAlign = "right";
+    ctx.fillText(items[i], 110, 5);
+    ctx.restore();
+  }
+}
+drawWheel(ctx1, ["Truth", "Dare"], ["#3b82f6", "#ef4444"]);
+
+// Quay bánh xe
+function spinWheel(canvas, items) {
+  return new Promise((resolve) => {
+    const ctx = canvas.getContext("2d");
+    const n = items.length;
+    const arc = (2 * Math.PI) / n;
+    let angle = 0;
+    const spins = 6 + Math.random() * 2;
+    const duration = 4000;
+    const start = performance.now();
+
+    function animate(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const ease = 1 - Math.pow(1 - progress, 3);
+      angle = 2 * Math.PI * spins * ease;
+
+      if (Math.random() < 0.25) {
+        // click sound ngẫu nhiên nhẹ
+        clickSound.currentTime = 0;
+        clickSound.play().catch(() => {});
+      }
+
+      ctx.clearRect(0, 0, 250, 250);
+      for (let i = 0; i < n; i++) {
+        ctx.beginPath();
+        ctx.fillStyle = i % 2 ? "#8b5cf6" : "#06b6d4";
+        ctx.moveTo(125, 125);
+        ctx.arc(125, 125, 120, i * arc + angle, (i + 1) * arc + angle);
+        ctx.lineTo(125, 125);
+        ctx.fill();
+
+        ctx.save();
+        ctx.translate(125, 125);
+        ctx.rotate(i * arc + angle + arc / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#fff";
+        ctx.font = "bold 13px Poppins";
+        ctx.fillText(items[i], 110, 5);
+        ctx.restore();
+      }
+
+      if (progress < 1) requestAnimationFrame(animate);
+      else {
+        // Lấy kết quả theo góc kim chỉ lên trên
+        const finalAngle = angle % (2 * Math.PI);
+        const index = Math.floor(
+          (n - (finalAngle / (2 * Math.PI)) * n) % n
+        );
+        resolve(items[index]);
+      }
+    }
+    requestAnimationFrame(animate);
+  });
+}
+
+// Nút vòng 1
+btn1.onclick = async () => {
+  if (spinning) return;
+  spinning = true;
+  result.textContent = "Đang quay vòng 1...";
+  choice1 = await spinWheel(wheel1, ["Truth", "Dare"]);
+  result.textContent = "Kết quả vòng 1: " + choice1;
+  spinning = false;
+};
+
+// Nút vòng 2
+btn2.onclick = async () => {
+  if (spinning) return;
+  if (!choice1) {
+    result.textContent = "Hãy quay vòng 1 trước!";
+    return;
+  }
+  spinning = true;
+  const items = choice1 === "Truth" ? truthItems : dareItems;
+  drawWheel(ctx2, items, ["#f59e0b", "#10b981", "#ec4899", "#6366f1"]);
+  result.textContent = "Đang quay vòng 2...";
+  const choice2 = await spinWheel(wheel2, items);
+  result.textContent = `${choice1} → ${choice2}`;
+  spinning = false;
+};
+
+// Điều khiển bằng phím
+document.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight") btn1.click();
+  if (e.key === "ArrowDown") btn2.click();
+});
+</script>
+</body>
+</html>
