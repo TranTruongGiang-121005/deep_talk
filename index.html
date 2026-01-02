@@ -86,12 +86,7 @@
     <canvas id="wheel1" width="250" height="250"></canvas>
     <p class="note">Vòng 1: Chọn Truth hoặc Dare<br>(→ để quay)</p>
   </div>
-  <div class="wheel-wrapper">
-    <div class="arrow"></div>
-    <canvas id="wheel2" width="250" height="250"></canvas>
-    <p class="note">Vòng 2: Câu hỏi hoặc thử thách<br>(↓ để quay)</p>
-  </div>
-</div>
+
 
 <div class="buttons">
   <button id="spin1">🎡 Quay vòng 1</button>
@@ -102,72 +97,116 @@
 <script>
 // ======= DÁN DANH SÁCH CỦA BẠN Ở ĐÂY =======
 const truthItems = [
-"Lần gần nhất bạn muốn hôn tôi ngay lập tức là khi nào?, hoặc uống 2 ly.",
-"Mô tả chi tiết một nụ hôn lý tưởng của bạn với tôi, hoặc uống 3 ly.",
-"Bạn muốn tôi chạm vào đâu nhất bây giờ?, hoặc uống 2 ly.",
-"Kể một tưởng tượng “nóng” về chúng ta, hoặc uống 3 ly.",
-"Nếu phải chọn một chỗ trên cơ thể tôi để hôn, bạn chọn đâu?, hoặc uống 3 ly.",
-"Bạn thích tôi mặc gì để trông sexy nhất?, hoặc uống 2 ly.",
-"Bạn muốn thử tư thế ôm/hôn nào chưa từng thử?, hoặc uống 2 ly.",
-"Có điều gì bạn muốn tôi làm cho bạn nhưng chưa dám nói?, hoặc uống 2 ly.",
-"Lần đầu tiên bạn thấy tôi sexy là khi nào?, hoặc uống 3 ly.",
-"Bạn từng tưởng tượng chúng ta ở một tình huống “nóng” nơi riêng tư chưa?, hoặc uống 2 ly.",
-"Bạn có muốn thử hôn “gợi cảm” ngay bây giờ không?, hoặc uống 2 ly.",
-"Mô tả cảm giác khi bạn ôm tôi chặt., hoặc uống 2 ly.",
-"Bạn thích kiểu vuốt ve nào của tôi nhất?, hoặc uống 2 ly.",
-"Kể một lần bạn tưởng tượng chúng ta gần gũi nhưng chưa thực hiện., hoặc uống 2 ly.",
-"Điều bạn muốn thử với tôi nhưng chưa dám thử., hoặc uống 2 ly.",
-"Bạn mất trinh ở tuổi nào?, hoặc uống 3 ly.",
-"Bạn đã ngủ với bao nhiêu người?, hoặc uống 3 ly.",
-"Nụ hôn tồi tệ nhất của bạn là ai?, hoặc uống 2 ly.",
-"Vai diễn kỳ lạ nhất mà bạn từng làm là gì?, hoặc uống 2 ly.",
-"Bạn đã bao giờ bị bắt quả tang chưa? Nếu vậy, bởi ai?, hoặc uống 2 ly.",
-"Bạn đã bao giờ tập hôn trong gương chưa?, hoặc uống 1 ly.",
-"Bạn đã từng say nhất là gì?, hoặc uống 2 ly.",
-"Nếu phải quay lại với người yêu cũ, bạn sẽ chọn ai, vì sao?, hoặc uống 2 ly.",
-"Bạn đã bao giờ chia tay người yêu cũ ngay trước sinh nhật của họ để tránh mua quà sinh nhật cho họ chưa, vì sao?, hoặc uống 2 ly.",
-"Nơi kỳ lạ nhất mà bạn đã hôn, đụ với ai đó là gì?, hoặc uống 2 ly.",
-"Bạn đã bao giờ hẹn hò với ai đó chỉ vì tình dục, vì sao?, hoặc uống 2 ly.",
-"Bạn đã từng gửi ảnh khỏa thân chưa, vì sao?, hoặc uống 2 ly.",
-"Gọi tên một người mà bạn hối hận vì đã hôn., hoặc uống 2 ly.",
-"Kể 1 bí mật nào bạn chưa từng nói với ai?, hoặc uống 3 ly.",
-"Đoán màu sắc của quần lót của đối phương là gì?, hoặc uống 2 ly."
-]
-const dareItems = [
-"Hôn người kia ở cổ trong 20 giây, hoặc uống 2 ly.",
-"Hôn người kia ở vai 20 giây, hoặc uống 2 ly.",
-"Nhắm mắt, để người kia hôn bất cứ đâu trong 60 giây, hoặc uống 3 ly.",
-"Hôn tay người kia 20 giây, hoặc uống 2 ly.",
-"Ôm người kia thật chặt trong 60 giây, hoặc uống 3 ly.",
-"“Mini dance” sexy 20 giây trước người kia, hoặc uống 3 ly.",
-"Ôm eo hoặc lưng người kia 20 giây, hoặc uống 2 ly.",
-"Cởi một lớp áo hoặc swap 1 món đồ với người kia, hoặc uống 2 ly.",
-"Hôn “mini kiss” liên tiếp 10 lần, hoặc uống 2 ly.",
-"Massage lưng hoặc chân người kia 30 giây , hoặc uống 3 ly.",
-"Cả hai cùng uống 2 ly và hôn nhau 36 giây.",
-"Hôn bất kỳ chỗ nào được chọn ngẫu nhiên 36 giây, hoặc uống 2 ly.",
-"Cuddle + hôn liên tục 30 giây, hoặc cả 2 cùng uống 1 ly.",
-"Cho tôi cú bò sexy nhất của bạn trong 18 giây, hoặc uống 4 ly.",
-"Ngồi trên đùi tôi cho đến khi hết trò chơi, hoặc uống 3 ly.",
-"Để tôi chạm vào vùng nhạy cảm trong 30 giây, hoặc uống 2 ly.",
-"Để tôi hôn bất cứ đâu bạn chọn trong 20 giây, hoặc uống 2 ly.",
-"Để tôi vuốt ve bất cứ đâu bạn chọn trong 20 giây, hoặc uống 2 ly.",
-"Thì thầm vào tai người đối diện điều gì đó gợi cảm trong 30 giây, hoặc uống 3 ly.",
-"Ôm người kia từ phía sau và hôn lên cổ họ, hoặc uống 2 ly.",
-"Đặt tay bạn lên bất cứ đâu của đối phương trong 1 phút, hoặc uống 2 ly.",
-"Dùng tay xoa bóp đùi người kia trong 20 giây, hoặc uống 3 ly.",
-"Để người kia hôn lên ngực bạn trong 36 giây, hoặc uống 3 ly.",
-"Để người kia hôn lên bụng bạn trong 18 giây, hoặc uống 3 ly.",
-];
+Ký ức tuổi thơ nào khiến em cười mãi không quên?
+Người đã ảnh hưởng lớn nhất đến cách em yêu thương là ai?
+Điều gì trong quá khứ khiến em tự hào nhất?
+Nỗi sợ lớn nhất của em trong tình yêu là gì?
+Em tưởng tượng cuộc sống lý tưởng 10 năm nữa ra sao?
+Điều gì khiến em cảm thấy thực sự được yêu?
+Nếu có thể thay đổi một quyết định trong quá khứ, đó sẽ là gì?
+Giá trị cốt lõi em không bao giờ từ bỏ trong mối quan hệ là gì?
+Khi buồn, em muốn được an ủi thế nào?
+Em học được gì từ mối tình cũ?
+Điều gì ở anh khiến em cảm thấy an toàn?
+Em định nghĩa “hạnh phúc” trong tình yêu như thế nào?
+Nếu mai là ngày cuối cùng, em muốn dành thời gian với ai?
+Điều gì khiến em tổn thương nhất mà chưa từng kể?
+Em mong muốn con cái mình học được gì từ cha mẹ?
+Khi cô đơn, em thường làm gì để vượt qua?
+Điều gì ở tương lai khiến em lo lắng nhất?
+Em cảm thấy biết ơn anh vì điều gì?
+Nếu có siêu năng lực, em muốn thay đổi điều gì trong thế giới?
+Em nghĩ tình yêu đích thực cần những yếu tố nào?
+Lần đầu gặp anh, em cảm thấy thế nào trong lòng?
+Điều gì ở anh khiến em muốn ở bên lâu dài?
+Em đã từng tha thứ cho ai điều lớn nhất là gì?
+Khi giận, em cần không gian hay cần được nói chuyện ngay?
+Điều gì khiến em cảm thấy mình đang sống đúng nghĩa?
+Em muốn chúng ta già đi cùng nhau ở đâu?
+Nếu có 1 tỷ, em sẽ làm gì đầu tiên cho gia đình nhỏ của mình?
+Em sợ nhất điều gì khi nghĩ về việc mất anh?
+Ký ức nào với gia đình khiến em ấm lòng nhất?
+Em nghĩ chúng ta giống nhau ở điểm nào sâu sắc nhất?
+Điều gì ở anh khiến em thay đổi cách nhìn về tình yêu?
+Em muốn anh hiểu thêm về em điều gì mà chưa từng nói?
+Khi stress, em muốn anh ở bên kiểu nào?
+Em mong tương lai chúng ta có bao nhiêu con?
+Điều gì ở quá khứ khiến em day dứt đến giờ?
+Em cảm thấy tự do nhất khi làm gì cùng anh?
+Nếu được quay lại ngày đầu yêu, em muốn thay đổi gì?
+Em nghĩ “lòng tin” trong tình yêu được xây bằng gì?
+Điều gì khiến em thấy anh là “người ấy” của mình?
+Em đã từng mơ về đám cưới của chúng ta chưa?
+Khi cãi nhau, em muốn hòa giải kiểu gì?
+Em sợ nhất việc chúng ta xa cách về cảm xúc?
+Điều gì ở anh khiến em muốn cố gắng hơn mỗi ngày?
+Em muốn chúng ta cùng nhau thực hiện ước mơ nào?
+Nếu anh thay đổi một điều, em muốn là gì?
+Em cảm thấy bị tổn thương nhất khi ai hiểu lầm điều gì về mình?
+Em muốn anh nhớ ngày gì nhất trong hành trình của chúng ta?
+Điều gì ở cha mẹ khiến em muốn học theo trong hôn nhân?
+Em nghĩ chúng ta sẽ già đi bên nhau như thế nào?
+Khi hạnh phúc nhất, em muốn chia sẻ với ai trước tiên?
+Em đã từng hy sinh điều gì lớn vì tình yêu chưa?
+Em muốn anh gọi em bằng biệt danh gì khi về già?
+Điều gì khiến em thấy anh khác biệt so với người cũ?
+Em nghĩ tình yêu cần “tha thứ” đến mức nào?
+Khi anh khóc, em muốn làm gì nhất?
+Em muốn chúng ta cùng nhau đi đâu trước khi có con?
+Điều gì ở anh khiến em thấy mình may mắn?
+Em đã từng nghi ngờ tình yêu của chúng ta chưa?
+Em muốn anh hiểu về nỗi đau nào trong quá khứ của em?
+Em nghĩ “trung thành” nghĩa là gì trong tình yêu hiện đại?
+Khi em im lặng, anh muốn em đang nghĩ gì?
+Em muốn chúng ta cùng nhau già đi ở thành phố hay nông thôn?
+Điều gì khiến em thấy anh mạnh mẽ nhất?
+Em đã từng viết thư tình cho ai chưa? Nội dung gì?
+Em muốn anh tự hào về em vì điều gì trong 5 năm tới?
+Khi yêu, em sợ nhất bị phản bội kiểu nào?
+Em muốn chúng ta cùng nhau học điều gì mới?
+Điều gì ở anh khiến em muốn bảo vệ suốt đời?
+Em nghĩ chúng ta sẽ cãi nhau vì chuyện gì trong tương lai?
+Em muốn anh nhớ mãi lời hứa nào của em?
+Khi anh buồn, em muốn anh tìm em ngay hay để anh một mình?
+Em đã từng mơ thấy tương lai của chúng ta chưa?
+Điều gì khiến em thấy tình yêu của chúng ta đặc biệt?
+Em muốn anh hiểu về ước mơ thầm kín nào của em?
+Khi già, em muốn chúng ta làm gì cùng nhau mỗi ngày?
+Em nghĩ “hạnh phúc gia đình” được xây từ những điều nhỏ nào?
+Em đã từng tha thứ cho anh điều gì mà chưa từng nói?
+Em muốn anh thay đổi thói quen nào để yêu em tốt hơn?
+Khi em thành công, anh muốn em làm gì đầu tiên?
+Em nghĩ chúng ta nên cùng nhau tiết kiệm cho điều gì lớn?
+Em muốn anh biết về nỗi sợ tuổi thơ nào của em?
+Khi yêu xa, điều gì khiến em nhớ anh nhất?
+Em muốn chúng ta cùng nhau nấu món gì vào cuối tuần?
+Em nghĩ tình yêu cần “khoảng cách” ở mức nào?
+Điều gì ở anh khiến em thấy mình trưởng thành hơn?
+Em muốn anh hiểu về áp lực công việc của em thế nào?
+Khi anh ghen, em muốn anh làm gì?
+Em đã từng viết nhật ký về anh chưa?
+Em muốn chúng ta cùng nhau tham gia hoạt động tình nguyện nào?
+Em nghĩ “lãng mạn” trong tình yêu lâu dài là gì?
+Khi anh bệnh, em muốn chăm anh kiểu nào?
+Em muốn anh hiểu về sở thích thầm kín nào của em?
+Em nghĩ chúng ta sẽ truyền lại giá trị gì cho con?
+Khi cãi nhau, em muốn anh xin lỗi trước hay ôm trước?
+Em muốn anh biết điều gì về gia đình em mà chưa từng kể?
+Em nghĩ tình yêu cần “thử thách” nào để bền vững?
+Khi anh khen em, em muốn nghe điều gì nhất?
+Em muốn chúng ta cùng nhau già đi bên biển hay núi?
+Em đã từng cảm thấy anh là “định mệnh” vào khoảnh khắc nào?
+Em muốn nói lời yêu anh bao nhiêu lần nữa trong đời?
+Nếu được sống lại, em muốn gặp anh sớm hơn bao lâu?
+  ]
+
 // ============================================
 
 const wheel1 = document.getElementById("wheel1");
-const wheel2 = document.getElementById("wheel2");
+
 const ctx1 = wheel1.getContext("2d");
-const ctx2 = wheel2.getContext("2d");
 const result = document.getElementById("result");
 const btn1 = document.getElementById("spin1");
-const btn2 = document.getElementById("spin2");
 let choice1 = null;
 let spinning = false;
 
@@ -268,27 +307,13 @@ btn1.onclick = async () => {
   spinning = false;
 };
 
-// Nút vòng 2
-btn2.onclick = async () => {
-  if (spinning) return;
-  if (!choice1) {
-    result.textContent = "Hãy quay vòng 1 trước!";
-    return;
-  }
-  spinning = true;
-  const items = choice1 === "Truth" ? truthItems : dareItems;
-  drawWheel(ctx2, items, ["#f59e0b", "#10b981", "#ec4899", "#6366f1"]);
-  result.textContent = "Đang quay vòng 2...";
-  const choice2 = await spinWheel(wheel2, items);
-  result.textContent = `${choice1} → ${choice2}`;
-  spinning = false;
-};
+
 
 // Điều khiển bằng phím
 document.addEventListener("keydown", (e) => {
   if (e.key === "ArrowRight") btn1.click();
-  if (e.key === "ArrowDown") btn2.click();
 });
 </script>
 </body>
 </html>
+
