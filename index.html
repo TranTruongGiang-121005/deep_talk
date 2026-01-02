@@ -1,294 +1,207 @@
-
 <!doctype html>
 <html lang="vi">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>🎯 Truth or Dare - Deluxe Wheel</title>
+
 <style>
-  body {
-    background: radial-gradient(circle at center, #1e1b4b, #0f172a);
-    font-family: "Poppins", sans-serif;
-    color: #fff;
-    text-align: center;
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-  h1 { margin-bottom: 10px; }
-  .wheel-container {
-    display: flex;
-    gap: 60px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  .wheel-wrapper {
-    position: relative;
-  }
-  canvas {
-    border-radius: 50%;
-    background: #111;
-    box-shadow: 0 0 15px rgba(255,255,255,0.15);
-  }
+body {
+  background: radial-gradient(circle at center, #1e1b4b, #0f172a);
+  font-family: "Poppins", sans-serif;
+  color: #fff;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+h1 { margin-bottom: 10px; }
+
+.wheel-container {
+  display: flex;
+  gap: 50px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.wheel-wrapper {
+  position: relative;
+}
+
+canvas {
+  border-radius: 50%;
+  background: #111;
+  box-shadow: 0 0 18px rgba(255,255,255,0.15);
+}
+
 .arrow {
   position: absolute;
-  top: 125px;                    /* đúng giữa hình tròn (vì radius = 125px) */
-  right: -30px;                  /* nằm ngoài mép phải một chút */
-  transform: translateY(-50%);   /* căn giữa chính xác theo chiều dọc */
+  top: 125px;
+  right: -30px;
+  transform: translateY(-50%);
   width: 0;
   height: 0;
   border-top: 14px solid transparent;
   border-bottom: 14px solid transparent;
-  border-right: 28px solid #facc15; /* đầu nhọn hướng sang trái */
-  filter: drop-shadow(0 0 4px #000);
+  border-right: 28px solid #facc15;
 }
-  .buttons {
-    margin-top: 25px;
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  button {
-    padding: 12px 22px;
-    border: none;
-    border-radius: 10px;
-    background: #facc15;
-    color: #111;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.25s;
-  }
-  button:hover {
-    background: #fde047;
-  }
-  #result {
-    margin-top: 18px;
-    font-size: 18px;
-    font-weight: 500;
-  }
-  .note {
-    font-size: 13px;
-    opacity: 0.8;
-    margin-top: 5px;
-  }
+
+.buttons {
+  margin-top: 25px;
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+button {
+  padding: 12px 22px;
+  border: none;
+  border-radius: 10px;
+  background: #facc15;
+  color: #111;
+  font-weight: 600;
+  cursor: pointer;
+}
+button:hover { background: #fde047; }
+
+#result {
+  margin-top: 18px;
+  font-size: 18px;
+  text-align: center;
+  max-width: 90%;
+}
+
+.note {
+  font-size: 13px;
+  opacity: 0.8;
+  margin-top: 6px;
+  text-align: center;
+}
 </style>
 </head>
+
 <body>
 <h1>🎯 Vòng quay Truth or Dare 🎡</h1>
 
 <div class="wheel-container">
+
+  <!-- Vòng 1 -->
   <div class="wheel-wrapper">
     <div class="arrow"></div>
     <canvas id="wheel1" width="250" height="250"></canvas>
-    <p class="note">Vòng 1: Chọn Truth hoặc Dare<br>(→ để quay)</p>
+    <p class="note">Vòng 1: Truth / Dare</p>
   </div>
 
+  <!-- Vòng 2 -->
+  <div class="wheel-wrapper">
+    <div class="arrow"></div>
+    <canvas id="wheel2" width="250" height="250"></canvas>
+    <p class="note">Vòng 2: Nội dung</p>
+  </div>
+
+</div>
 
 <div class="buttons">
   <button id="spin1">🎡 Quay vòng 1</button>
   <button id="spin2">🎲 Quay vòng 2</button>
 </div>
+
 <div id="result"></div>
 
 <script>
-// ======= DÁN DANH SÁCH CỦA BẠN Ở ĐÂY =======
+// ===== DANH SÁCH =====
 const truthItems = [
-Ký ức tuổi thơ nào khiến em cười mãi không quên?
-Người đã ảnh hưởng lớn nhất đến cách em yêu thương là ai?
-Điều gì trong quá khứ khiến em tự hào nhất?
-Nỗi sợ lớn nhất của em trong tình yêu là gì?
-Em tưởng tượng cuộc sống lý tưởng 10 năm nữa ra sao?
-Điều gì khiến em cảm thấy thực sự được yêu?
-Nếu có thể thay đổi một quyết định trong quá khứ, đó sẽ là gì?
-Giá trị cốt lõi em không bao giờ từ bỏ trong mối quan hệ là gì?
-Khi buồn, em muốn được an ủi thế nào?
-Em học được gì từ mối tình cũ?
-Điều gì ở anh khiến em cảm thấy an toàn?
-Em định nghĩa “hạnh phúc” trong tình yêu như thế nào?
-Nếu mai là ngày cuối cùng, em muốn dành thời gian với ai?
-Điều gì khiến em tổn thương nhất mà chưa từng kể?
-Em mong muốn con cái mình học được gì từ cha mẹ?
-Khi cô đơn, em thường làm gì để vượt qua?
-Điều gì ở tương lai khiến em lo lắng nhất?
-Em cảm thấy biết ơn anh vì điều gì?
-Nếu có siêu năng lực, em muốn thay đổi điều gì trong thế giới?
-Em nghĩ tình yêu đích thực cần những yếu tố nào?
-Lần đầu gặp anh, em cảm thấy thế nào trong lòng?
-Điều gì ở anh khiến em muốn ở bên lâu dài?
-Em đã từng tha thứ cho ai điều lớn nhất là gì?
-Khi giận, em cần không gian hay cần được nói chuyện ngay?
-Điều gì khiến em cảm thấy mình đang sống đúng nghĩa?
-Em muốn chúng ta già đi cùng nhau ở đâu?
-Nếu có 1 tỷ, em sẽ làm gì đầu tiên cho gia đình nhỏ của mình?
-Em sợ nhất điều gì khi nghĩ về việc mất anh?
-Ký ức nào với gia đình khiến em ấm lòng nhất?
-Em nghĩ chúng ta giống nhau ở điểm nào sâu sắc nhất?
-Điều gì ở anh khiến em thay đổi cách nhìn về tình yêu?
-Em muốn anh hiểu thêm về em điều gì mà chưa từng nói?
-Khi stress, em muốn anh ở bên kiểu nào?
-Em mong tương lai chúng ta có bao nhiêu con?
-Điều gì ở quá khứ khiến em day dứt đến giờ?
-Em cảm thấy tự do nhất khi làm gì cùng anh?
-Nếu được quay lại ngày đầu yêu, em muốn thay đổi gì?
-Em nghĩ “lòng tin” trong tình yêu được xây bằng gì?
-Điều gì khiến em thấy anh là “người ấy” của mình?
-Em đã từng mơ về đám cưới của chúng ta chưa?
-Khi cãi nhau, em muốn hòa giải kiểu gì?
-Em sợ nhất việc chúng ta xa cách về cảm xúc?
-Điều gì ở anh khiến em muốn cố gắng hơn mỗi ngày?
-Em muốn chúng ta cùng nhau thực hiện ước mơ nào?
-Nếu anh thay đổi một điều, em muốn là gì?
-Em cảm thấy bị tổn thương nhất khi ai hiểu lầm điều gì về mình?
-Em muốn anh nhớ ngày gì nhất trong hành trình của chúng ta?
-Điều gì ở cha mẹ khiến em muốn học theo trong hôn nhân?
-Em nghĩ chúng ta sẽ già đi bên nhau như thế nào?
-Khi hạnh phúc nhất, em muốn chia sẻ với ai trước tiên?
-Em đã từng hy sinh điều gì lớn vì tình yêu chưa?
-Em muốn anh gọi em bằng biệt danh gì khi về già?
-Điều gì khiến em thấy anh khác biệt so với người cũ?
-Em nghĩ tình yêu cần “tha thứ” đến mức nào?
-Khi anh khóc, em muốn làm gì nhất?
-Em muốn chúng ta cùng nhau đi đâu trước khi có con?
-Điều gì ở anh khiến em thấy mình may mắn?
-Em đã từng nghi ngờ tình yêu của chúng ta chưa?
-Em muốn anh hiểu về nỗi đau nào trong quá khứ của em?
-Em nghĩ “trung thành” nghĩa là gì trong tình yêu hiện đại?
-Khi em im lặng, anh muốn em đang nghĩ gì?
-Em muốn chúng ta cùng nhau già đi ở thành phố hay nông thôn?
-Điều gì khiến em thấy anh mạnh mẽ nhất?
-Em đã từng viết thư tình cho ai chưa? Nội dung gì?
-Em muốn anh tự hào về em vì điều gì trong 5 năm tới?
-Khi yêu, em sợ nhất bị phản bội kiểu nào?
-Em muốn chúng ta cùng nhau học điều gì mới?
-Điều gì ở anh khiến em muốn bảo vệ suốt đời?
-Em nghĩ chúng ta sẽ cãi nhau vì chuyện gì trong tương lai?
-Em muốn anh nhớ mãi lời hứa nào của em?
-Khi anh buồn, em muốn anh tìm em ngay hay để anh một mình?
-Em đã từng mơ thấy tương lai của chúng ta chưa?
-Điều gì khiến em thấy tình yêu của chúng ta đặc biệt?
-Em muốn anh hiểu về ước mơ thầm kín nào của em?
-Khi già, em muốn chúng ta làm gì cùng nhau mỗi ngày?
-Em nghĩ “hạnh phúc gia đình” được xây từ những điều nhỏ nào?
-Em đã từng tha thứ cho anh điều gì mà chưa từng nói?
-Em muốn anh thay đổi thói quen nào để yêu em tốt hơn?
-Khi em thành công, anh muốn em làm gì đầu tiên?
-Em nghĩ chúng ta nên cùng nhau tiết kiệm cho điều gì lớn?
-Em muốn anh biết về nỗi sợ tuổi thơ nào của em?
-Khi yêu xa, điều gì khiến em nhớ anh nhất?
-Em muốn chúng ta cùng nhau nấu món gì vào cuối tuần?
-Em nghĩ tình yêu cần “khoảng cách” ở mức nào?
-Điều gì ở anh khiến em thấy mình trưởng thành hơn?
-Em muốn anh hiểu về áp lực công việc của em thế nào?
-Khi anh ghen, em muốn anh làm gì?
-Em đã từng viết nhật ký về anh chưa?
-Em muốn chúng ta cùng nhau tham gia hoạt động tình nguyện nào?
-Em nghĩ “lãng mạn” trong tình yêu lâu dài là gì?
-Khi anh bệnh, em muốn chăm anh kiểu nào?
-Em muốn anh hiểu về sở thích thầm kín nào của em?
-Em nghĩ chúng ta sẽ truyền lại giá trị gì cho con?
-Khi cãi nhau, em muốn anh xin lỗi trước hay ôm trước?
-Em muốn anh biết điều gì về gia đình em mà chưa từng kể?
-Em nghĩ tình yêu cần “thử thách” nào để bền vững?
-Khi anh khen em, em muốn nghe điều gì nhất?
-Em muốn chúng ta cùng nhau già đi bên biển hay núi?
-Em đã từng cảm thấy anh là “định mệnh” vào khoảnh khắc nào?
-Em muốn nói lời yêu anh bao nhiêu lần nữa trong đời?
-Nếu được sống lại, em muốn gặp anh sớm hơn bao lâu?
-  ]
+  "Ký ức tuổi thơ nào khiến bạn cười mãi?",
+  "Điều gì khiến bạn tự hào nhất về bản thân?",
+  "Bạn sợ mất điều gì nhất?",
+  "Người bạn tin tưởng nhất là ai?",
+  "Bạn hạnh phúc nhất khi nào?",
+  "Bạn từng khóc vì chuyện gì gần đây?",
+  "Điều bí mật nhỏ bạn chưa từng nói?",
+  "Bạn mong ước điều gì trong 5 năm tới?"
+];
 
-// ============================================
+const dareItems = [
+  "Cười to 10 giây không được ngừng",
+  "Nói một lời khen cho người bên cạnh",
+  "Giả giọng robot trong 15 giây",
+  "Tạo dáng chụp ảnh ngầu nhất",
+  "Hát 1 câu bài hát bạn thích",
+  "Nhảy tại chỗ 10 lần",
+  "Gửi icon ❤️ cho người bạn chọn",
+  "Kể một chuyện vui về bản thân"
+];
 
+// ===== SETUP =====
 const wheel1 = document.getElementById("wheel1");
-
+const wheel2 = document.getElementById("wheel2");
 const ctx1 = wheel1.getContext("2d");
+const ctx2 = wheel2.getContext("2d");
 const result = document.getElementById("result");
-const btn1 = document.getElementById("spin1");
+
 let choice1 = null;
 let spinning = false;
 
-// Hiệu ứng âm thanh "click click"
-const clickSound = new Audio();
-clickSound.src =
-  "data:audio/mp3;base64,//uQxA..."; // âm thanh base64 ngắn, không cần file ngoài
-clickSound.volume = 0.3;
-
-// Vẽ vòng cơ bản
+// ===== VẼ VÒNG =====
 function drawWheel(ctx, items, colors) {
-  ctx.clearRect(0, 0, 250, 250);
-  const n = items.length;
-  const arc = (2 * Math.PI) / n;
-  for (let i = 0; i < n; i++) {
+  ctx.clearRect(0,0,250,250);
+  const arc = (2*Math.PI)/items.length;
+  for(let i=0;i<items.length;i++){
     ctx.beginPath();
     ctx.fillStyle = colors[i % colors.length];
-    ctx.moveTo(125, 125);
-    ctx.arc(125, 125, 120, i * arc, (i + 1) * arc);
-    ctx.lineTo(125, 125);
+    ctx.moveTo(125,125);
+    ctx.arc(125,125,120,i*arc,(i+1)*arc);
     ctx.fill();
 
     ctx.save();
-    ctx.translate(125, 125);
-    ctx.rotate(i * arc + arc / 2);
-    ctx.fillStyle = "#fff";
-    ctx.font = "bold 14px Poppins";
-    ctx.textAlign = "right";
-    ctx.fillText(items[i], 110, 5);
+    ctx.translate(125,125);
+    ctx.rotate(i*arc + arc/2);
+    ctx.textAlign="right";
+    ctx.fillStyle="#fff";
+    ctx.font="bold 12px Poppins";
+    ctx.fillText(items[i],110,5);
     ctx.restore();
   }
 }
-drawWheel(ctx1, ["Truth", "Dare"], ["#3b82f6", "#ef4444"]);
 
-// Quay bánh xe
-function spinWheel(canvas, items) {
-  return new Promise((resolve) => {
+// ===== QUAY =====
+function spinWheel(canvas, items, colors) {
+  return new Promise(resolve=>{
     const ctx = canvas.getContext("2d");
-    const n = items.length;
-    const arc = (2 * Math.PI) / n;
-    let angle = 0;
-    const spins = 6 + Math.random() * 2;
-    const duration = 4000;
+    const arc = (2*Math.PI)/items.length;
+    const spins = 6 + Math.random()*2;
+    const duration = 3500;
     const start = performance.now();
 
-    function animate(now) {
-      const elapsed = now - start;
-      const progress = Math.min(elapsed / duration, 1);
-      const ease = 1 - Math.pow(1 - progress, 3);
-      angle = 2 * Math.PI * spins * ease;
+    function animate(t){
+      const p = Math.min((t-start)/duration,1);
+      const ease = 1-Math.pow(1-p,3);
+      const angle = spins*2*Math.PI*ease;
 
-      if (Math.random() < 0.25) {
-        // click sound ngẫu nhiên nhẹ
-        clickSound.currentTime = 0;
-        clickSound.play().catch(() => {});
-      }
-
-      ctx.clearRect(0, 0, 250, 250);
-      for (let i = 0; i < n; i++) {
+      ctx.clearRect(0,0,250,250);
+      for(let i=0;i<items.length;i++){
         ctx.beginPath();
-        ctx.fillStyle = i % 2 ? "#8b5cf6" : "#06b6d4";
-        ctx.moveTo(125, 125);
-        ctx.arc(125, 125, 120, i * arc + angle, (i + 1) * arc + angle);
-        ctx.lineTo(125, 125);
+        ctx.fillStyle = colors[i % colors.length];
+        ctx.moveTo(125,125);
+        ctx.arc(125,125,120,i*arc+angle,(i+1)*arc+angle);
         ctx.fill();
 
         ctx.save();
-        ctx.translate(125, 125);
-        ctx.rotate(i * arc + angle + arc / 2);
-        ctx.textAlign = "right";
-        ctx.fillStyle = "#fff";
-        ctx.font = "bold 13px Poppins";
-        ctx.fillText(items[i], 110, 5);
+        ctx.translate(125,125);
+        ctx.rotate(i*arc+angle+arc/2);
+        ctx.textAlign="right";
+        ctx.fillStyle="#fff";
+        ctx.font="bold 12px Poppins";
+        ctx.fillText(items[i],110,5);
         ctx.restore();
       }
 
-      if (progress < 1) requestAnimationFrame(animate);
+      if(p<1) requestAnimationFrame(animate);
       else {
-        // Lấy kết quả theo góc kim chỉ lên trên
-        const finalAngle = angle % (2 * Math.PI);
         const index = Math.floor(
-          (n - (finalAngle / (2 * Math.PI)) * n) % n
+          (items.length - (angle%(2*Math.PI))/(2*Math.PI)*items.length) % items.length
         );
         resolve(items[index]);
       }
@@ -297,21 +210,35 @@ function spinWheel(canvas, items) {
   });
 }
 
-// Nút vòng 1
-btn1.onclick = async () => {
-  if (spinning) return;
-  spinning = true;
-  result.textContent = "Đang quay vòng 1...";
-  choice1 = await spinWheel(wheel1, ["Truth", "Dare"]);
-  result.textContent = "Kết quả vòng 1: " + choice1;
-  spinning = false;
+// ===== INIT =====
+drawWheel(ctx1, ["Truth","Dare"], ["#3b82f6","#ef4444"]);
+drawWheel(ctx2, truthItems, ["#22c55e","#16a34a"]);
+
+// ===== BUTTONS =====
+spin1.onclick = async ()=>{
+  if(spinning) return;
+  spinning=true;
+  result.textContent="Đang quay vòng 1...";
+  choice1 = await spinWheel(wheel1,["Truth","Dare"],["#3b82f6","#ef4444"]);
+  result.textContent="👉 Kết quả: "+choice1;
+  drawWheel(ctx2, choice1==="Truth"?truthItems:dareItems,
+    choice1==="Truth"?["#22c55e","#16a34a"]:["#f97316","#ef4444"]);
+  spinning=false;
 };
 
+spin2.onclick = async ()=>{
+  if(spinning || !choice1) return;
+  spinning=true;
+  const list = choice1==="Truth"?truthItems:dareItems;
+  const colors = choice1==="Truth"?["#22c55e","#16a34a"]:["#f97316","#ef4444"];
+  const r = await spinWheel(wheel2,list,colors);
+  result.textContent = (choice1==="Truth"?"💬 Truth: ":"🔥 Dare: ") + r;
+  spinning=false;
+};
 
-
-// Điều khiển bằng phím
-document.addEventListener("keydown", (e) => {
-  if (e.key === "ArrowRight") btn1.click();
+// Phím →
+document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowRight") spin1.click();
 });
 </script>
 </body>
